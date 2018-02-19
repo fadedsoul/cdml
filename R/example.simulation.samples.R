@@ -6,6 +6,13 @@
 ################################################################################
 
 ################ FUNCTION ###########################
+#' Simulation of applying different number of samples
+#'
+#' @param model choose from "IV" and "CTE"
+#'
+#' @return files with certain name tags, e.g. "linear.sample.cte.Rdata"
+#' @export
+#'
 application.samples <- function(model) {
 
   if (model == "IV") {
@@ -22,7 +29,6 @@ application.samples <- function(model) {
   }
 
  running.simulation(
-   ########### enter all parameters needed for running simulations ##########
    model <- model,
    simu <- 40,
    samples <- c(200, 300, 500, 750, 1000, 1500, 2000),
@@ -37,11 +43,11 @@ application.samples <- function(model) {
    method <- c("SR","CDML","HI"),
    fold <- c(1,2,3,5),
    responseCurve <- "linear",
-   file <- file1 # the file saves data
+   file <- file1, # the file saves data
+   sd <- 8
  )
 
 running.simulation(
-  ########### enter all parameters needed for running simulations ##########
   model <- model,
   simu <- 40,
   samples <- c(200, 300, 500, 750, 1000, 1500, 2000),
@@ -56,11 +62,11 @@ running.simulation(
   method <- c("SR","CDML","HI"),
   fold <- c(1,2,3,5),
   responseCurve <- "polynom",
+  sd <- 8,
   file <- file2 # the file saves data
 )
 
 running.simulation(
-  ########### enter all parameters needed for running simulations ##########
   model <- model,
   simu <- 40,
   samples <- c(200, 300, 500, 750, 1000, 1500, 2000),
@@ -75,11 +81,11 @@ running.simulation(
   method <- c("SR","CDML","HI"),
   fold <- c(1,2,3,5),
   responseCurve <- "polynom2",
+  sd <- 8,
   file <- file3 # the file saves data
 )
 
 running.simulation(
-  ########### enter all parameters needed for running simulations ##########
   model <- model,
   simu <- 40,
   samples <- c(200, 300, 500, 750, 1000, 1500, 2000),
@@ -94,6 +100,7 @@ running.simulation(
   method <- c("SR","CDML","HI"),
   fold <- c(1,2,3,5),
   responseCurve <- "polynom3",
+  sd <- 8,
   file <- file4 # the file saves data
 )
 }

@@ -2,6 +2,8 @@
 
 export(application.covariates)
 export(application.lasso)
+export(application.samples)
+export(application.sd)
 export(data.generation)
 export(data.generation.wrap)
 export(running.simulation)
