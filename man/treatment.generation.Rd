@@ -6,14 +6,16 @@
 \title{Generation of treatment dataset}
 \usage{
 treatment.generation(distributionOption = "normal", numOfSamples = 1000,
-  covariates, sd)
+  covariates, sd = 8)
 }
 \arguments{
 \item{distributionOption}{choose from normal, uniform, student distributions}
 
 \item{numOfSamples}{number of samples}
 
-\item{numOfCovariates}{dimension of covariates}
+\item{covariates}{the object that returned from function covariates.generation}
+
+\item{sd}{\eqn{t = \sum x_i + \epsilon}, the standard error of \eqn{\epsilon}}
 }
 \value{
 A vector stands for treatment

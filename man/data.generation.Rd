@@ -9,7 +9,7 @@ data.generation(model = "CTE", numOfSamples = 1000,
   distributionForCovariates = "normal", distributionForIVs = "normal",
   distributionForNoise = "normal", distributionForTreatment = "normal",
   parametricCurveOption = "linear", trimLowerBound = -10,
-  trimUpperBound = 10, sd = 8)
+  trimUpperBound = 10, sd)
 }
 \arguments{
 \item{model}{choose from "CTE", "IV"}
@@ -50,5 +50,6 @@ distributionForNoise = "normal",
 distributionForTreatment = "normal",
 parametricCurveOption = "linear",
 trimLowerBound = -10,
-trimUpperBound = 10)
+trimUpperBound = 10,
+sd = 8)
 }

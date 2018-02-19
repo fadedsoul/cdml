@@ -57,8 +57,8 @@
 #' method <- c("SR", "CDML"),
 #' fold <- c(1, 2, 3),
 #' responseCurve <- "polynom3",
-#' file <- "demo.Rdata" # the file saves data
-#' )
+#' file <- "demo.Rdata", # the file saves data
+#' sd =8)
 running.simulation <-
   function(model = "CTE",
            simu = 40,

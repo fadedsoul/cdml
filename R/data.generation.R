@@ -92,7 +92,8 @@ dg.w <- data.generation.wrap
 #' distributionForTreatment = "normal",
 #' parametricCurveOption = "linear",
 #' trimLowerBound = -10,
-#' trimUpperBound = 10)
+#' trimUpperBound = 10,
+#' sd = 8)
 data.generation <- function(model = "CTE",
                             numOfSamples = 1000,
                             numOfPreSamples = NULL,
@@ -104,7 +105,7 @@ data.generation <- function(model = "CTE",
                             parametricCurveOption = "linear",
                             trimLowerBound = -10,
                             trimUpperBound = 10,
-                            sd = 8)
+                            sd )
 {
   if ((!is.null(numOfPreSamples)) && (!is.null(numOfSamples))) {
     stop("Please enter either numOfSamples or numOfPreSamples in function data.generation!")
@@ -168,8 +169,7 @@ data.generation <- function(model = "CTE",
       treatment.generation(
         covariates = x,
         numOfSamples = numOfPreSamples,
-        distributionOption = distributionForTreatment
-      )
+        distributionOption = distributionForTreatment      )
     y <- response.generation(
       covariates = x,
       treatment = t,

@@ -293,8 +293,7 @@ gps.method.estimation <- function(data,
     lambda <-
       EnvStats::boxcox(as.vector(nnet.res.exp),
                        optimize = TRUE,
-                       lambda=seq(-2, 2, by=0.1),
-                       eps = 0.10001)$lambda
+                       eps = 0.01)$lambda
 
     if (lambda != 0) {
       mean <- mean((nnet.res.exp ^ lambda - 1) / lambda)
@@ -335,10 +334,9 @@ gps.method.estimation <- function(data,
     rf.res.exp <- exp(rf.res.res)
 
     lambda <-
-      EnvStats::boxcox(as.vector(nnet.res.exp),
+      EnvStats::boxcox(as.vector(rf.res.exp),
                        optimize = TRUE,
-                       lambda=seq(-2, 2, by=0.1),
-                       eps = 0.10001)$lambda
+                       eps = 0.01)$lambda
 
     if (lambda != 0) {
       mean <- mean((rf.res.exp ^ lambda - 1) / lambda)
@@ -379,10 +377,9 @@ gps.method.estimation <- function(data,
     lm.res.exp <- exp(lm.res.res)
 
     lambda <-
-      EnvStats::boxcox(as.vector(nnet.res.exp),
+      EnvStats::boxcox(as.vector(lm.res.exp),
                        optimize = TRUE,
-                       lambda=seq(-2, 2, by=0.1),
-                       eps = 0.10001)$lambda
+                       eps = 0.01)$lambda
 
     if (lambda != 0) {
       mean <- mean((lm.res.exp ^ lambda - 1) / lambda)

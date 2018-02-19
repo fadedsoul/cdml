@@ -82,8 +82,9 @@ covariates.generation <-
 #' Generation of treatment dataset
 #'
 #' @param distributionOption choose from normal, uniform, student distributions
-#' @param numOfCovariates dimension of covariates
 #' @param numOfSamples number of samples
+#' @param sd \eqn{t = \sum x_i + \epsilon}, the standard error of \eqn{\epsilon}
+#' @param covariates the object that returned from function covariates.generation
 #'
 #' @return A vector stands for treatment
 #'
@@ -91,7 +92,7 @@ treatment.generation <-
   function(distributionOption = "normal",
            numOfSamples = 1000,
            covariates,
-           sd)
+           sd=8)
   {
     check.distribution.name <- function(name) {
       return(
@@ -130,7 +131,6 @@ treatment.generation <-
 #' Generation of noise dataset
 #'
 #' @param distributionOption choose from normal, uniform, student distributions
-#' @param numOfCovariates dimension of covariates
 #' @param numOfSamples number of samples
 #'
 #' @return A vector stands for noise

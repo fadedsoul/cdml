@@ -61,7 +61,7 @@ bias.evaluation <- function(result.list, true.data) {
 
 #' Bias Evaluation Wrap-up
 #'
-#' @param result.list.list  list of result lists from running.simulation function
+#' @param res.list.list  list of result lists from running.simulation function
 #' @param true.data result from true.data.generation function
 #'
 #' @return a list of bias lists
@@ -83,6 +83,7 @@ bias.evaluation.wrap <- function(res.list.list, true.data){
 #'
 #' @param result.list  result list from simulation.wrap function
 #' @param true.data result from true.data.generation function
+#' @param ncores number of cores we use
 #'
 #' @return a list of error lists where "error1" stands for l^1 error, "error2" stands for "l^2" error
 error.evaluation.wrap <-

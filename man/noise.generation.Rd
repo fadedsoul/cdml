@@ -11,8 +11,6 @@ noise.generation(distributionOption = "normal", numOfSamples = 1000)
 \item{distributionOption}{choose from normal, uniform, student distributions}
 
 \item{numOfSamples}{number of samples}
-
-\item{numOfCovariates}{dimension of covariates}
 }
 \value{
 A vector stands for noise

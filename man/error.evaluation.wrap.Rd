@@ -10,6 +10,8 @@ error.evaluation.wrap(true.data, result.list, ncores)
 \item{true.data}{result from true.data.generation function}
 
 \item{result.list}{result list from simulation.wrap function}
+
+\item{ncores}{number of cores we use}
 }
 \value{
 a list of error lists where "error1" stands for l^1 error, "error2" stands for "l^2" error

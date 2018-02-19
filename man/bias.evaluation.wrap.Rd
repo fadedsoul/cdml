@@ -7,9 +7,9 @@
 bias.evaluation.wrap(res.list.list, true.data)
 }
 \arguments{
-\item{true.data}{result from true.data.generation function}
+\item{res.list.list}{list of result lists from running.simulation function}
 
-\item{result.list.list}{list of result lists from running.simulation function}
+\item{true.data}{result from true.data.generation function}
 }
 \value{
 a list of bias lists
