@@ -431,6 +431,7 @@ simulation <- function(kfold,
           ## combine pi estimation to our data
           ## combine pibar estimation to our data
           pibar <- rowMeans(pi.series.result$matrix)
+
           data.complete.foldwise <-
             cbind(pi = pi.series.result$vector,
                   pibar = pibar,
@@ -496,10 +497,9 @@ simulation <- function(kfold,
           colnames(data.train.iv)[which(names(data.train.iv) == "z")] <-
             "t"
 
-          data.eval.iv <- data.train[, !(names(data.eval) %in% "t")]
+          data.eval.iv <- data.eval[, !(names(data.eval) %in% "t")]
           colnames(data.eval.iv)[which(names(data.eval.iv) == "z")] <-
             "t"
-
 
           object2 <-
             gps.method.estimation(
@@ -530,11 +530,11 @@ simulation <- function(kfold,
           ## combine pi estimation to our data
           ## combine pibar estimation to our data
           pibar <- rowMeans(pi.series.result$matrix)
+
           data.complete.foldwise <-
             cbind(pi = pi.series.result$vector,
                   pibar = pibar,
                   data.with.gbar.g)
-
           if (length(pibar) != dim(data.eval)[1] &&
               length(pi.series.result$vector) != dim(data.eval)[1]) {
             stop("pi estimation or pibar estimation is invalid!")

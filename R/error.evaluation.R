@@ -88,10 +88,6 @@ bias.evaluation.wrap <- function(res.list.list, true.data){
 #' @return a list of error lists where "error1" stands for l^1 error, "error2" stands for "l^2" error
 error.evaluation.wrap <-
   err.w <- function(true.data, result.list, ncores)
-    ## result.list: result.list from simulation wrap function
-    ## true.data: result from true.data.generation function
-
-    ## return value $error1, $error2 is a vector!
   {
     error1 <- mcmapply(
       result = result.list,
