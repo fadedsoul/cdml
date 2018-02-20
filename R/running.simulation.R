@@ -29,7 +29,6 @@
 #'
 #' @import parallel
 #' @import randomForest
-#' @import specSeriesCDE
 #' @import KernSmooth
 #' @import stats
 #' @import nnet
