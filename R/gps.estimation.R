@@ -66,7 +66,7 @@ gps.method.estimation <- function(data,
           xValidation = data.matrix(data.valid[,!(names(data.valid) %in% c("t"))]),
           zTrain = data.train[, (names(data.train) %in% c("t"))],
           zValidation = data.valid[, (names(data.valid) %in% c("t"))],
-          kernelFunction = radialKernel,
+          kernelFunction = specSeriesCDE::radialKernel,
           extraKernel = list("eps.val" = eps),
           chooseDelta = FALSE,
           nXMax = nXMax,
@@ -84,7 +84,7 @@ gps.method.estimation <- function(data,
         xValidation = data.matrix(data.valid[,!(names(data.valid) %in% c("t"))]),
         zTrain = data.train[, (names(data.train) %in% c("t"))],
         zValidation = data.valid[, (names(data.valid) %in% c("t"))],
-        kernelFunction = radialKernel,
+        kernelFunction = specSeriesCDE::radialKernel,
         extraKernel = list("eps.val" = bestEps),
         chooseDelta = TRUE,
         zMin = treatment.min,
@@ -546,7 +546,7 @@ gps.predict <-
       x.data.eval <-
         data.matrix(data.eval[,!(names(data.eval) %in% c("t", "y"))])
       result.raw <-
-        predictCDE(object = object,
+        specSeriesCDE::predictCDE(object = object,
                    xTest = x.data.eval,
                    B = grid.length)
 
@@ -600,7 +600,7 @@ gps.predict <-
         x.data.eval <-
           data.matrix(data.eval[,!(names(data.eval) %in% c("t", "y"))])
         result.raw <-
-          predictCDE(object = object,
+          specSeriesCDE::predictCDE(object = object,
                      xTest = x.data.eval,
                      B = grid.length)
 
