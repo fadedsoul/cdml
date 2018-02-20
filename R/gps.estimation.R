@@ -61,7 +61,7 @@ gps.method.estimation <- function(data,
       {
         #print(paste(ii / length(epsGrid) * 100, "percent complete", sep = ""))
         eps = epsGrid[ii]
-        object = seriesCDE(
+        object = specSeriesCDE::seriesCDE(
           xTrain = data.matrix(data.train[,!(names(data.train) %in% c("t"))]),
           xValidation = data.matrix(data.valid[,!(names(data.valid) %in% c("t"))]),
           zTrain = data.train[, (names(data.train) %in% c("t"))],
@@ -79,7 +79,7 @@ gps.method.estimation <- function(data,
       bestEps = epsGrid[which.min(error)] # best bandwidth
 
       # run this seriesCDE again with best bandwidth and set to choose Delta
-      object = seriesCDE(
+      object = specSeriesCDE::seriesCDE(
         xTrain = data.matrix(data.train[,!(names(data.train) %in% c("t"))]),
         xValidation = data.matrix(data.valid[,!(names(data.valid) %in% c("t"))]),
         zTrain = data.train[, (names(data.train) %in% c("t"))],
@@ -464,7 +464,7 @@ gps.predict <-
         x.data.chunk <-
           data.matrix(data.chunk[,!(names(data.chunk) %in% c("t", "y"))])
         result.raw <-
-          predictCDE(object = object,
+          specSeriesCDE::predictCDE(object = object,
                      xTest = x.data.chunk,
                      B = grid.length)
 
