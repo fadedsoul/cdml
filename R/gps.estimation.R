@@ -5,7 +5,6 @@
 #                         gps.method.estimation                                #
 #                                                                              #
 ################################################################################
-
 #' Generalized Propensity Score Estimation
 #'
 #' @param data data

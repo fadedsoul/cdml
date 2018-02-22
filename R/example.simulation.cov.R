@@ -48,7 +48,7 @@ application.covariates <- function(model) {
    fold <- c(1, 2, 3, 5),
    responseCurve <- "linear",
    sd = 8,
-   file <- "linear.table2.iv.Rdata" # the file saves data
+   file <- file1 # the file saves data
  )
 
 running.simulation(
@@ -68,7 +68,7 @@ running.simulation(
   fold <- c(1, 2, 3, 5),
   responseCurve <- "polynom",
   sd = 8,
-  file <- "polynom.table2.iv.Rdata" # the file saves data
+  file <- file2 # the file saves data
 )
 
 running.simulation(
@@ -88,7 +88,7 @@ running.simulation(
   fold <- c(1, 2, 3, 5),
   responseCurve <- "polynom2",
   sd = 8,
-  file <- "polynom2.table2.iv.Rdata" # the file saves data
+  file <- file3 # the file saves data
 )
 
 running.simulation(
@@ -108,7 +108,7 @@ running.simulation(
   fold <- c(1, 2, 3, 5),
   responseCurve <- "polynom3",
   sd = 8,
-  file <- "polynom3.table2.iv.Rdata" # the file saves data
+  file <- file4 # the file saves data
 )
 }
 
