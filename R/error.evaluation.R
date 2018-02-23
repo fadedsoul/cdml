@@ -65,11 +65,11 @@ bias.evaluation <- function(result.list, true.data) {
 #' @param true.data result from true.data.generation function
 #'
 #' @return a list of bias lists
-bias.evaluation.wrap <- function(res.list.list, true.data){
+bias.evaluation.wrap <- function(res.list.list, true.data) {
   bias.list.list <- mapply(
-    res.list.list,
+    result.list = res.list.list,
+    true.data = true.data,
     FUN = bias.evaluation,
-    MoreArgs = list(true.data = true.data),
     SIMPLIFY = FALSE
   )
   return(bias.list.list)

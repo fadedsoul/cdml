@@ -26,7 +26,6 @@ covariates.generation <-
     if (!check.distribution.name(distributionOption)) {
       stop("This distribution that you have input for the covariates is not defined!")
     }
-
     ## here we generate the covariates in a way that covariates are independent with each other
     if (distributionOption == "normal") {
       xmat <-
