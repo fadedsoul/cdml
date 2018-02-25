@@ -410,6 +410,14 @@ gps.method.estimation <- function(data,
     }
   }
 
+  #### quantile regression Random Forest method ####
+  ### www.jmlr.org/papers/v7/meinshausen06a.html ####
+  if(gps.method == "quantregForest"){
+
+    ################ TBA ######################
+    error("...TBA")
+  }
+
   return(object)
 }
 

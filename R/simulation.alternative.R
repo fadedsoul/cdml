@@ -1,3 +1,8 @@
+#' The alternative of running simulation
+#'
+#' @return file saved with name specified
+#' @export
+#'
 simulation.alternative <- function() {
   ncores <-
     min(detectCores(all.tests = FALSE, logical = TRUE), 44)

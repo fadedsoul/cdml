@@ -84,7 +84,7 @@ simulation <- function(kfold,
         name == "rf&normal" |
         name == "nnet&normal" | name == "rf&boxcox" |
         name == "nnet&boxcox" |
-        name == "linear&boxcox" | name == "boosting&normal"
+        name == "linear&boxcox" | name == "boosting&normal" | name == "quantregForest"
     )
   }
 

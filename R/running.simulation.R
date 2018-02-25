@@ -85,21 +85,6 @@ running.simulation <-
 
     set.seed(101) # for reproducibility
 
-    # require(parallel)
-    # require(randomForest)
-    # require(specSeriesCDE)
-    # require(KernSmooth)
-    # require(stats)
-    # require(nnet)
-    # require(rpart)
-    # require(earth)
-    # require(glmnet)
-    # require(EnvStats)
-    # require(gbm)
-    # require(polycor)
-    # require(np)
-    # require(utils)
-
     ncores <-
       min(detectCores(all.tests = FALSE, logical = TRUE), 44) # CPUs that we use
 
