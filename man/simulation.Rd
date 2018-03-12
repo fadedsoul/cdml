@@ -8,7 +8,7 @@ simulation(kfold, data = data, trimLowerBound.pi = 1e-05,
   trimLowerBound.pibar = 1e-05, trimUpperBound.pi = 10,
   trimUpperBound.pibar = 10, method = "CDML", g.method = "rf",
   gps.method = "series", trimLowerBound.t = -10, trimUpperBound.t = 10,
-  model, variation = "whole", verbose = TRUE)
+  model, variation = "whole", verbose = TRUE, detoured = FALSE)
 }
 \arguments{
 \item{kfold}{number of folds for sample splitting}
@@ -43,6 +43,10 @@ Estimate the probability measure by empirical measure
                    As default, we select "whole"}
 
 \item{verbose}{print in console step by step}
+
+\item{detoured}{if FALSE method will be done normally;
+otherwise a special simulation will be examined, where CDML is chosen method, CTE is chosen model,
+gps.method "series" is not allowed.}
 }
 \value{
 a list of estimated value "yhat" evaluated at "t.grid", with "record" to record details of this simulation

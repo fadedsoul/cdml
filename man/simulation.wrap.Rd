@@ -6,7 +6,7 @@
 \usage{
 simulation.wrap(kfold, data, model, ncores = ncores, method,
   g.method = "rf", gps.method = "series", trimLowerBound.t = -4,
-  trimUpperBound.t = 4)
+  trimUpperBound.t = 4, detoured = FALSE)
 }
 \arguments{
 \item{kfold}{number of folds for sample splitting}

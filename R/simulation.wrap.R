@@ -30,7 +30,8 @@ simulation.wrap <-
            g.method = "rf",
            gps.method = "series",
            trimLowerBound.t = -4,
-           trimUpperBound.t = 4)
+           trimUpperBound.t = 4,
+           detoured = FALSE)
   {
     result.list <- mcmapply(
       data <- data,
@@ -48,7 +49,8 @@ simulation.wrap <-
         trimLowerBound.t = trimLowerBound.t,
         trimUpperBound.t = trimUpperBound.t,
         variation = "whole",
-        verbose = FALSE
+        verbose = FALSE,
+        detoured = detoured
       ),
       SIMPLIFY = FALSE,
       mc.cores = ncores

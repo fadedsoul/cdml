@@ -6,7 +6,7 @@
 \usage{
 gps.method.estimation(data, gps.method = "series", n.prop = 0.7,
   bw.length.out = 10, bw.from = 0.5, bw.to = 9.5, treatment.min = -10,
-  treatment.max = 10, verbose = TRUE)
+  treatment.max = 10, verbose = TRUE, detoured = FALSE)
 }
 \arguments{
 \item{data}{data}
@@ -26,6 +26,10 @@ gps.method.estimation(data, gps.method = "series", n.prop = 0.7,
 \item{treatment.max}{in what interval conditional density shall be evaluated}
 
 \item{verbose}{print in console the procedure step by step}
+
+\item{detoured}{if FALSE method will be done normally;
+otherwise a special simulation will be examined, where CDML is chosen method, CTE is chosen model,
+gps.method "series" is not allowed.}
 }
 \value{
 object of generalized propensity score estimation

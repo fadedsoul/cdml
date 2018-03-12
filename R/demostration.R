@@ -16,14 +16,15 @@
 demo <- function(model = "CTE",
                  fold = 5,
                  g.method,
-                 gps.method) {
-  set.seed(101) # for reproducibility
+                 gps.method,
+                 numOfSamples = 200) {
+  #set.seed(101) # for reproducibility
 
   curve <- "polynom"
 
   data <- data.generation(
     model = model,
-    numOfSamples = 200,
+    numOfSamples = numOfSamples,
     numOfPreSamples = NULL,
     numOfCovariates = 5,
     distributionForCovariates = "normal",
@@ -93,4 +94,22 @@ demo <- function(model = "CTE",
         result2$yhat,
         col = "cyan",
         lwd = 3)
+
+  result3 <- simulation(
+    kfold = 1 ,
+    data = data,
+    method = "HI",
+    g.method = g.method,
+    gps.method = gps.method,
+    trimLowerBound.t = -4,
+    trimUpperBound.t = 4,
+    model = model,
+    verbose = FALSE
+  )
+
+  lines(true.data$grid,
+        result3$yhat,
+        col = "purple",
+        lwd = 3)
+
 }

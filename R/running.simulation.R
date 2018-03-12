@@ -40,6 +40,7 @@
 #' @import polycor
 #' @import np
 #' @import utils
+#' @import quantregForest
 #'
 #' @examples running.simulation(
 #' ########### enter all parameters needed for running simulations ##########

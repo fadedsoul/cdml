@@ -1,5 +1,6 @@
 
 
+
 ################################################################################
 #                                                                              #
 #                         gps.method.estimation                                #
@@ -16,6 +17,9 @@
 #' @param treatment.min  in what interval conditional density shall be evaluated
 #' @param treatment.max  in what interval conditional density shall be evaluated
 #' @param verbose print in console the procedure step by step
+#' @param detoured if FALSE method will be done normally;
+#'             otherwise a special simulation will be examined, where CDML is chosen method, CTE is chosen model,
+#'             gps.method "series" is not allowed.
 #'
 #' @return object of generalized propensity score estimation
 gps.method.estimation <- function(data,
@@ -26,7 +30,8 @@ gps.method.estimation <- function(data,
                                   bw.to = 9.5,
                                   treatment.min = -10,
                                   treatment.max = 10,
-                                  verbose = TRUE)
+                                  verbose = TRUE,
+                                  detoured = FALSE)
 
 {
   if (!("t" %in% names(data) && "y" %in% names(data))) {
@@ -40,9 +45,9 @@ gps.method.estimation <- function(data,
       sample(n, n * n.prop, replace = FALSE)
 
     data.train <-
-      data[indices,][,!(names(data) %in% c("y"))] # training data
+      data[indices, ][, !(names(data) %in% c("y"))] # training data
     data.valid <-
-      data[-indices,][,!(names(data) %in% c("y"))] # validation data
+      data[-indices, ][, !(names(data) %in% c("y"))] # validation data
 
     nXMax <-
       100 # Maximum possible number of components
@@ -61,8 +66,8 @@ gps.method.estimation <- function(data,
         #print(paste(ii / length(epsGrid) * 100, "percent complete", sep = ""))
         eps = epsGrid[ii]
         object = specSeriesCDE::seriesCDE(
-          xTrain = data.matrix(data.train[,!(names(data.train) %in% c("t"))]),
-          xValidation = data.matrix(data.valid[,!(names(data.valid) %in% c("t"))]),
+          xTrain = data.matrix(data.train[, !(names(data.train) %in% c("t"))]),
+          xValidation = data.matrix(data.valid[, !(names(data.valid) %in% c("t"))]),
           zTrain = data.train[, (names(data.train) %in% c("t"))],
           zValidation = data.valid[, (names(data.valid) %in% c("t"))],
           kernelFunction = specSeriesCDE::radialKernel,
@@ -79,8 +84,8 @@ gps.method.estimation <- function(data,
 
       # run this seriesCDE again with best bandwidth and set to choose Delta
       object = specSeriesCDE::seriesCDE(
-        xTrain = data.matrix(data.train[,!(names(data.train) %in% c("t"))]),
-        xValidation = data.matrix(data.valid[,!(names(data.valid) %in% c("t"))]),
+        xTrain = data.matrix(data.train[, !(names(data.train) %in% c("t"))]),
+        xValidation = data.matrix(data.valid[, !(names(data.valid) %in% c("t"))]),
         zTrain = data.train[, (names(data.train) %in% c("t"))],
         zValidation = data.valid[, (names(data.valid) %in% c("t"))],
         kernelFunction = specSeriesCDE::radialKernel,
@@ -109,12 +114,13 @@ gps.method.estimation <- function(data,
   #### linear model of t,x, and the noise is normal distributed ####
   if (gps.method == "linear&normal") {
     # filter out the y column
-    data <- data[,!(names(data) %in% c("y"))]
-    lm.res <- lm(t ~ ., data = data)
+    data2 <- data[, !(names(data) %in% c("y"))]
+    lm.res <- lm(t ~ ., data = data2)
 
     mean <- mean(lm.res$residuals)
     sd <- sd(lm.res$residuals)
 
+    if(detoured == FALSE){
     object <- function(data.eval) {
       return(dnorm(
         data.eval$t - predict(lm.res, data.eval),
@@ -123,17 +129,28 @@ gps.method.estimation <- function(data,
         log = FALSE
       ))
     }
+    }
+
+    if(detoured == TRUE){
+      # data <- cbind( data, z = lm.res$residuals)
+      object <- function(data.eval) {
+        return(
+          data.eval$t - predict(lm.res, data.eval)
+          )
+      }
+    }
   }
 
   #### rf model of t,x, and the noise is normal distributed ####
   if (gps.method == "rf&normal") {
     # filter out the y column
-    data <- data[,!(names(data) %in% c("y"))]
-    rf.res <- randomForest(t ~ ., data = data, ntrees = 1000)
+    data2 <- data[, !(names(data) %in% c("y"))]
+    rf.res <- randomForest(t ~ ., data = data2, ntrees = 1000)
 
     mean <- mean(data$t - rf.res$predicted)
     sd <- sd(data$t - rf.res$predicted)
 
+    if(detoured == FALSE){
     object <- function(data.eval) {
       return(dnorm(
         data.eval$t - predict(rf.res, data.eval),
@@ -142,20 +159,26 @@ gps.method.estimation <- function(data,
         log = FALSE
       ))
     }
+    }
+
+    if(detoured == TRUE){
+      data <- cbind( data, z = (data$t - rf.res$predicted))
+    }
   }
 
   #### nnet model of t,x, and the noise is normal distributed ####
   if (gps.method == "nnet&normal") {
     # filter out the y column
-    data <- data[,!(names(data) %in% c("y"))]
+    data2 <- data[, !(names(data) %in% c("y"))]
     nnet.res <- nnet(t ~ .,
                      size = 8,
                      linout = TRUE,
-                     data = data)
+                     data = data2)
 
     mean <- mean(nnet.res$residuals)
     sd <- sd(nnet.res$residuals)
 
+    if(detoured == FALSE){
     object <- function(data.eval) {
       return(dnorm(
         data.eval$t - predict(nnet.res, data.eval),
@@ -164,12 +187,18 @@ gps.method.estimation <- function(data,
         log = FALSE
       ))
     }
+    }
+
+    if(detoured == TRUE){
+      data <- cbind( data, z = (data$t - nnet.res$predicted))
+    }
+
   }
 
   #### boosting model of t,x and the noise is normal distributed ####
   if (gps.method == "boosting&normal") {
     # filter out the y column
-    data <- data[,!(names(data) %in% c("y"))]
+    data <- data[, !(names(data) %in% c("y"))]
 
     ### A Boosting Algorithm for Estimating Generalized Propensity Scores with Continuous Treatments.
     ### https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4749263/pdf/nihms725897.pdf
@@ -196,10 +225,10 @@ gps.method.estimation <- function(data,
       aac_iter = rep(NA, rep)
       for (i in 1:rep) {
         bo = sample(1:dim(data)[1], replace = TRUE, prob = wt)
-        newsample = data[bo, ]
+        newsample = data[bo,]
         j.drop = match(c("t"), names(data))
         j.drop = j.drop[!is.na(j.drop)]
-        x = newsample[, -j.drop]
+        x = newsample[,-j.drop]
         if (criterion == "spearman" | criterion == "kendall") {
           ac = apply(
             x,
@@ -260,8 +289,13 @@ gps.method.estimation <- function(data,
     best.aac.iter = opt$minimum
     best.aac = opt$objective
 
-    res <-  data$t - predict(model.den, newdata = data,   n.trees = floor(best.aac.iter),
-                                   type = "response")
+    res <-
+      data$t - predict(
+        model.den,
+        newdata = data,
+        n.trees = floor(best.aac.iter),
+        type = "response"
+      )
     sd <- sd(res)
     mean <- mean(res)
 
@@ -274,14 +308,49 @@ gps.method.estimation <- function(data,
         type = "response"
       )
       return(dnorm((data.eval$t - fitted) ,
-                 mean = mean, sd = sd) )
+                   mean = mean, sd = sd))
     }
   }
+
+  #### quantile regression Random Forest method ####
+  ### www.jmlr.org/papers/v7/meinshausen06a.html ####
+  if(gps.method == "quantregForest&normal"){
+    Xtrain     <- data[, !(names(data) %in% c("t", "y"))]
+    Ytrain     <- data[, names(data) %in% c("t")]
+
+    if(detoured == FALSE){
+      object <- quantregForest(x = Xtrain, y = Ytrain)
+    }
+
+    if(detoured == TRUE){
+
+      object2 <- quantregForest(x = Xtrain, y = Ytrain)
+
+
+      object <- function(data.eval) {
+
+        x.data <-
+          data.matrix(data.eval[, !(names(data.eval) %in% c("y"))])
+
+        result.raw <-
+          predict(object2, x.data,what = function(x) sample(x,100,replace=TRUE))
+
+        result <- apply(X=result.raw, FUN = mean, MARGIN = 1)
+
+        return(
+          data.eval$t - as.vector(result)
+        )
+
+      }
+    }
+
+
+    }
 
   ####neural network box-cox ####
   if (gps.method == "nnet&boxcox") {
     ## filter out the y column
-    data <- data[,!(names(data) %in% c("y"))]
+    data <- data[, !(names(data) %in% c("y"))]
     nnet.res <- nnet(t ~ .,
                      size = 8,
                      linout = TRUE,
@@ -327,7 +396,7 @@ gps.method.estimation <- function(data,
   #### random forest box-cox ####
   if (gps.method == "rf&boxcox") {
     ## filter out the y column
-    data <- data[,!(names(data) %in% c("y"))]
+    data <- data[, !(names(data) %in% c("y"))]
     rf.res <- randomForest(t ~ ., data = data, ntrees = 500)
     rf.res.res <- data$t - rf.res$predicted
     rf.res.exp <- exp(rf.res.res)
@@ -370,7 +439,7 @@ gps.method.estimation <- function(data,
   #### box-cox  linear ####
   if (gps.method == "linear&boxcox") {
     ## filter out the y column
-    data <- data[,!(names(data) %in% c("y"))]
+    data <- data[, !(names(data) %in% c("y"))]
     lm.res <- lm(t ~ ., data = data)
     lm.res.res <- lm.res$residuals
     lm.res.exp <- exp(lm.res.res)
@@ -412,276 +481,36 @@ gps.method.estimation <- function(data,
 
   #### quantile regression Random Forest method ####
   ### www.jmlr.org/papers/v7/meinshausen06a.html ####
-  if(gps.method == "quantregForest"){
+  if (gps.method == "quantregForest") {
+    Xtrain     <- data[, !(names(data) %in% c("t", "y"))]
+    Ytrain     <- data[, names(data) %in% c("t")]
 
-    ################ TBA ######################
-    error("...TBA")
+    if(detoured == FALSE){
+    object <- quantregForest(x = Xtrain, y = Ytrain)
+    }
+    if(detoured == TRUE){
+
+      object2 <- quantregForest(x = Xtrain, y = Ytrain)
+
+
+      object <- function(data.eval) {
+
+        x.data <-
+          data.matrix(data.eval[, !(names(data.eval) %in% c("y"))])
+
+        result.raw <-
+          predict(object2, x.data,what = function(x) sample(x,100,replace=TRUE))
+
+        result <- apply(X=result.raw, FUN = mean, MARGIN = 1)
+
+        return(
+          data.eval$t - as.vector(result)
+        )
+
+      }
+    }
   }
 
+  ## what to return finally
   return(object)
 }
-
-################################################################################
-#                                                                              #
-#                                gps.predict                                   #
-#                                                                              #
-################################################################################
-
-#' Generalize Propensity Score Prediction
-#'
-#' @param object an object from gps.method.estimation function
-#' @param gps.method selected generalized propensity score method
-#' @param data.chunk whole data, covariates are of interest. defualt = NULL
-#' @param data.eval data to be evaluated, the treatment is of interest
-#' @param t.grid alternate parameter to set up if data.chunk is NULL
-#' @param grid.length how dense the evaluation point should be like
-#' @param verbose print in console the procedure step by step
-#'
-#' @return a vector and a matrix
-#' For the matrix elements, they stand for the predicted values of:
-#' row means given certain treatment from data.eval
-#' column means given certain covariates from data.chunk.
-#' For the vector: we list in order the predicted value as \eqn{i=1,...,n} for \eqn{(T_i, X_i)}
-#'
-#'
-gps.predict <-
-  function(object,
-           gps.method = "series",
-           data.chunk = NULL,
-           data.eval,
-           t.grid = NULL,
-           grid.length = 1000,
-           verbose = FALSE)
-  {
-    # the value to be returned later
-    result.mat <- NULL
-    result.vec <- NULL
-
-    # if data.chunk variable is degenerated, then we skip the matrix-result calculation
-    if (!is.null(data.chunk)) {
-      result.mat <-
-        matrix(nrow = dim(data.eval)[1],
-               ncol = dim(data.chunk)[1]) # matrix to save the final result
-      # row means given certain treatment from data.eval
-      # column means given certain covariates from data.complete
-
-      ### series method ###
-      if (gps.method == "series") {
-        ## return matrix saving pi(T|x) for various x, used in \int_\CX \pi(T|x)dP_x
-        x.data.chunk <-
-          data.matrix(data.chunk[,!(names(data.chunk) %in% c("t", "y"))])
-        result.raw <-
-          specSeriesCDE::predictCDE(object = object,
-                     xTest = x.data.chunk,
-                     B = grid.length)
-
-        ## save the conditional density value into the result.mat
-        for (ii in 1:dim(data.eval)[1]) {
-          treatmentValue <- data.eval[ii, (names(data.eval) %in% c("t"))]
-
-          ind.1 <- which.min(abs(result.raw$z - treatmentValue))
-
-          if (ind.1 == 1) {
-            ind.2 <- ind.1 + 1
-          } else{
-            if (ind.1 == grid.length) {
-              ind.2 <- ind.1 - 1
-            } else{
-              if (abs(result.raw$z[ind.1 + 1] - treatmentValue) <
-                  abs(result.raw$z[ind.1 - 1] - treatmentValue)) {
-                ind.2 <- ind.1 + 1
-              } else{
-                ind.2 <- ind.1 - 1
-              }
-            }
-          }
-          result.mat[ii, ] <-
-            (result.raw$CDE[, ind.1] + result.raw$CDE[, ind.2]) / 2
-        }
-      }
-
-      ### linear&normal, parametric ###
-      if (gps.method == "linear&normal" |
-          gps.method == "rf&normal" |
-          gps.method == "nnet&normal" | gps.method == "rf&boxcox" |
-          gps.method == "nnet&boxcox" |
-          gps.method == "boosting&normal" |
-          gps.method == "linear&boxcox") {
-        # decompose the data.eval and data.chunk
-        data.eval.covariates <-
-          data.eval[,!(names(data.eval) %in% c("t", "y")), drop = FALSE]
-        data.eval.treatment <-
-          data.eval[, (names(data.eval) %in% c("t")), drop = FALSE]
-        data.chunk.covariates <-
-          data.chunk[,!(names(data.chunk) %in% c("t", "y")), drop = FALSE]
-        data.chunk.treatment <-
-          data.chunk[, (names(data.chunk) %in% c("t")), drop = FALSE]
-
-        ## save the gps value into the result.mat:
-        for (ii in 1:dim(data.eval)[1]) {
-          if (verbose == TRUE) {
-            print(paste(ii / dim(data.eval)[1] * 100, "percent complete", sep = ""))
-          }
-
-          data.temp <- cbind(data.frame(t = rep(
-            x = data.eval.treatment[ii, ],
-            times = dim(data.chunk.covariates)[1]
-          )),
-          data.chunk.covariates)
-
-          result.mat[ii,] <-
-            object(data.temp)
-        }
-        if (verbose == TRUE) {
-          cat("\n")
-        }
-      }
-
-      # check whether result.mat still have NA value
-      if (any(is.na(result.mat))) {
-        stop("Our Evaluation Matrix as an output of function gps.series.predict is invalid!")
-      }
-
-    }
-
-    ## return vector saving pi(T|X), used in \pi(T|X)
-    result.vec <-
-      rep(NA, dim(data.eval)[1]) # vector to save the final result
-
-    ### series method ###
-    if (gps.method == "series") {
-      x.data.eval <-
-        data.matrix(data.eval[,!(names(data.eval) %in% c("t", "y"))])
-      result.raw <-
-        specSeriesCDE::predictCDE(object = object,
-                   xTest = x.data.eval,
-                   B = grid.length)
-
-
-      for (ii in 1:dim(data.eval)[1]) {
-        treatmentValue <- data.eval[ii, (names(data.eval) %in% c("t"))]
-        ind.1 <- which.min(abs(result.raw$z - treatmentValue))
-        if (ind.1 == 1) {
-          ind.2 <- ind.1 + 1
-        } else{
-          if (ind.1 == grid.length) {
-            ind.2 <- ind.1 - 1
-
-          } else{
-            if (abs(result.raw$z[ind.1 + 1] - treatmentValue) <
-                abs(result.raw$z[ind.1 - 1] - treatmentValue)) {
-              ind.2 <- ind.1 + 1
-            } else{
-              ind.2 <- ind.1 - 1
-            }
-          }
-        }
-        result.vec[ii] <-
-          (result.raw$CDE[ii, ind.1] + result.raw$CDE[ii, ind.2]) / 2
-      }
-    }
-
-    ### linear&normal, parametric ###
-    if (gps.method == "linear&normal" |
-        gps.method == "rf&normal" |
-        gps.method == "nnet&normal" | gps.method == "rf&boxcox" |
-        gps.method == "nnet&boxcox" |
-        gps.method == "boosting&normal" |
-        gps.method == "linear&boxcox") {
-      result.vec <-
-        object(data.eval)
-    }
-    # check whether result.mat still have NA value
-    if (any(is.na(result.vec))) {
-      stop("Our Evaluation Vector as an output of function gps.series.predict is invalid!")
-    }
-
-    # if t.grid is degenerated, then we skip this matrix-result calculation
-    if (!is.null(t.grid)) {
-      result.mat <-
-        matrix(nrow = length(t.grid),
-               ncol = dim(data.eval)[1]) # matrix to save the final result
-
-      ### series method ###
-      if (gps.method == "series") {
-        x.data.eval <-
-          data.matrix(data.eval[,!(names(data.eval) %in% c("t", "y"))])
-        result.raw <-
-          specSeriesCDE::predictCDE(object = object,
-                     xTest = x.data.eval,
-                     B = grid.length)
-
-        for (ii in 1:length(t.grid)) {
-          treatmentValue <- t.grid[ii]
-          ind.1 <- which.min(abs(result.raw$z - treatmentValue))
-          if (ind.1 == 1) {
-            ind.2 <- ind.1 + 1
-          } else{
-            if (ind.1 == grid.length) {
-              ind.2 <- ind.1 - 1
-
-            } else{
-              if (abs(result.raw$z[ind.1 + 1] - treatmentValue) <
-                  abs(result.raw$z[ind.1 - 1] - treatmentValue)) {
-                ind.2 <- ind.1 + 1
-              } else{
-                ind.2 <- ind.1 - 1
-              }
-            }
-          }
-          result.mat[ii, ] <-
-            (result.raw$CDE[, ind.1] + result.raw$CDE[, ind.2]) / 2
-        }
-      }
-
-      ### linear&normal, parametric ###
-      if (gps.method == "linear&normal" |
-          gps.method == "rf&normal" |
-          gps.method == "nnet&normal" | gps.method == "rf&boxcox" |
-          gps.method == "nnet&boxcox" |
-          gps.method == "boosting&normal" |
-          gps.method == "linear&boxcox") {
-        # decompose the data.eval and data.chunk
-        data.eval.covariates <-
-          data.eval[,!(names(data.eval) %in% c("t", "y")), drop = FALSE]
-        data.eval.treatment <-
-          data.eval[, (names(data.eval) %in% c("t")), drop = FALSE]
-
-        for (ii in 1:length(t.grid)) {
-          if (verbose == TRUE) {
-            print(paste(ii / dim(data.eval)[1] * 100, "percent complete", sep = ""))
-          }
-
-          data.temp <- cbind(data.frame(t = rep(
-            x = t.grid[ii],
-            times = dim(data.eval)[1]
-          )),
-          data.eval.covariates)
-
-          result.mat[ii,] <-
-            object(data.temp)
-        }
-      }
-
-      # check whether result.mat still have NA value
-      if (any(is.na(result.mat))) {
-        stop("Our Evaluation Matrix as an output of function gps.series.predict is invalid!")
-      }
-    }
-
-    newList <- list("matrix" = result.mat, "vector" = result.vec)
-
-    return(newList)
-
-    ####################### abandoned codes ########################
-    # for (ii in 1:dim(data.eval)[1]) {
-    #   if (verbose == TRUE) {
-    #     print(paste(ii / dim(data.eval)[1] * 100, "percent complete", sep = ""))
-    #   }
-    #   result.vec[ii] <-
-    #     object(data.eval[ii,])
-    # }
-    # if (verbose == TRUE) {
-    #   cat("\n")
-    # }
-  }

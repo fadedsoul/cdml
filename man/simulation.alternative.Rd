@@ -4,7 +4,45 @@
 \alias{simulation.alternative}
 \title{The alternative of running simulation}
 \usage{
-simulation.alternative()
+simulation.alternative(model = "CTE", rep = 7, file = "simu.alter.rds",
+  method = c("CDML"), simu.times = 2, g.method = c("rf", "nnet"),
+  gps.method = c("linear&normal"), fold = c(1),
+  sample.size.option = c(200, 300), num.cov.option = c(2, 3, 5, 10),
+  treatment.sd.option = c(1, 2, 3, 5, 8, 10),
+  struct.model.option = c("linear", "polynom", "polynom2", "polynom3"),
+  detoured = FALSE, keep.same = TRUE)
+}
+\arguments{
+\item{model}{model varies from "IV", "CTE"}
+
+\item{rep}{within each set-up, number of repetition that will be done}
+
+\item{file}{file that we save our return into}
+
+\item{method}{estimation method we choose from double machine learning method ("CDML")
+and simple regression method ("SR"), Hirano & Imbens method ("HI")}
+
+\item{simu.times}{number of simulations one would run}
+
+\item{g.method}{a vector of method for regression estimation}
+
+\item{gps.method}{a vector of method for generalized propensity score estimation}
+
+\item{fold}{number of folds for sample splitting}
+
+\item{sample.size.option}{a vector of number of samples that will be selected from}
+
+\item{num.cov.option}{a vector of number of covariates that will be selected from}
+
+\item{treatment.sd.option}{a vector of standard deviation of treatment generation that will be selected from}
+
+\item{struct.model.option}{a vector of parametric curves of response generation, typically choose from "linear", "polynom", "polynom2", "polynom3", "mixture".}
+
+\item{detoured}{if FALSE method will be done normally;
+otherwise a special simulation will be examined, where CDML is chosen method, CTE is chosen model,
+gps.method "series" is not allowed.}
+
+\item{keep.same}{in the case detoured is true, whether we use the same gps.method to estimate T based on X}
 }
 \value{
 file saved with name specified

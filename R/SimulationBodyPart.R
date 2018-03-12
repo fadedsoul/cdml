@@ -29,6 +29,9 @@
 #'                    "train.data" only trainning data for estimating empirical measure.
 #'                    As default, we select "whole"
 #' @param verbose print in console step by step
+#' @param detoured if FALSE method will be done normally;
+#'             otherwise a special simulation will be examined, where CDML is chosen method, CTE is chosen model,
+#'             gps.method "series" is not allowed.
 #'
 #' @return a list of estimated value "yhat" evaluated at "t.grid", with "record" to record details of this simulation
 #' @export
@@ -47,7 +50,8 @@ simulation <- function(kfold,
                        model,
                        variation = "whole",
 
-                       verbose = TRUE)
+                       verbose = TRUE,
+                       detoured = FALSE)
 {
   ## check whether the number of folds we set is an integer
   check.integer <- function(N) {
@@ -84,7 +88,7 @@ simulation <- function(kfold,
         name == "rf&normal" |
         name == "nnet&normal" | name == "rf&boxcox" |
         name == "nnet&boxcox" |
-        name == "linear&boxcox" | name == "boosting&normal" | name == "quantregForest"
+        name == "linear&boxcox" | name == "boosting&normal" | name == "quantregForest" | name == "quantregForest&normal"
     )
   }
 
@@ -112,7 +116,30 @@ simulation <- function(kfold,
     stop("Please input a valid gps.method name!")
   }
 
-  if (kfold == 1) {
+
+  if(detoured == TRUE & kfold == 1){
+    object2 <-
+      gps.method.estimation(
+        data = data,
+        gps.method = gps.method,
+        treatment.max = trimUpperBound.t,
+        treatment.min = trimLowerBound.t,
+        verbose = verbose,
+        detoured = TRUE
+      )
+
+      dat <-
+        gps.predict(
+          data.chunk = data,
+          data.eval = data,
+          gps.method = gps.method,
+          object = object2,
+          detoured = TRUE
+        )
+    return(dat)
+}
+
+  if (kfold == 1 & detoured == FALSE) {
     print("Simulation starts!")
 
     ## choose which estimation model we choose
@@ -175,7 +202,6 @@ simulation <- function(kfold,
           stop("pi estimation or pibar estimation is invalid!")
         }
       }
-
       ## if model is choosen "IV"
       if (model == "IV") {
         ## estimation of g and gbar
@@ -335,7 +361,7 @@ simulation <- function(kfold,
     }
   }
   ## we will consider the sample splitting case in below the else bracket
-  else{
+  if(kfold > 1){
     print("Simulation starts!")
 
     ################### data splitting ##########################
@@ -358,6 +384,43 @@ simulation <- function(kfold,
       data.train <- data[nii,]
       data.eval <- data[ii,]
 
+      if(detoured == TRUE){
+        object2 <-
+          gps.method.estimation(
+            data = data.train,
+            gps.method = gps.method,
+            treatment.max = trimUpperBound.t,
+            treatment.min = trimLowerBound.t,
+            verbose = verbose,
+            detoured = TRUE
+          )
+
+        if (variation == "data.train") {
+          res <-
+            gps.predict(
+              data.chunk = data.train,
+              data.eval = data.eval,
+              gps.method = gps.method,
+              object = object2,
+              detoured = TRUE
+            )
+        }
+        if (variation == "whole") {
+          res <-
+            gps.predict(
+              data.chunk = data,
+              data.eval = data.eval,
+              gps.method = gps.method,
+              object = object2,
+              detoured = TRUE
+            )
+        }
+
+        data.complete <-
+          rbind(data.complete, res)
+      }
+
+      if(detoured == FALSE){
       ## choose which estimation model we choose
       # here we choose double machine learning method
       if (method == "CDML") {
@@ -388,6 +451,7 @@ simulation <- function(kfold,
                 g.method = g.method
               )
           }
+
           ## combine g estimation to our data
           ## combine gbar estimation to our data
           gbar <- rowMeans(g.rf.result$matrix)
@@ -546,16 +610,13 @@ simulation <- function(kfold,
 
         }
       }
-
-
-
+      }
       #################### the end of data sampling part ####################
-      cat("\n")
     }
   }
 
   #####################       post-processing ######################
-
+  if(detoured == FALSE){
   ## post-processing for CDML method
   if (method == "CDML") {
     ####### we have to filter the conditional density so that ub > pi, pibar > lb ######
@@ -767,4 +828,8 @@ simulation <- function(kfold,
     #plot(return.list$t.grid, return.list$yhat, type = "l")
   }
   return(return.list)
+  }
+
+  if(detoured == TRUE)
+    return(data.complete)
 }
