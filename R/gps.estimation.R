@@ -162,7 +162,12 @@ gps.method.estimation <- function(data,
     }
 
     if(detoured == TRUE){
-      data <- cbind( data, z = (data$t - rf.res$predicted))
+      # data <- cbind( data, z = lm.res$residuals)
+      object <- function(data.eval) {
+        return(
+          data.eval$t - predict(rf.res, data.eval)
+        )
+      }
     }
   }
 
