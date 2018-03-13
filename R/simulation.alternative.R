@@ -31,7 +31,7 @@ simulation.alternative <-
            g.method = c("rf", "nnet"),
            gps.method = c("linear&normal"),
            fold = c(1),
-           sample.size.option = c(200, 300),
+           sample.size.option = c(200, 300,500, 750, 1000, 1500),
            num.cov.option = c(2, 3, 5, 10),
            treatment.sd.option = c(1, 2, 3, 5, 8, 10),
            struct.model.option =
