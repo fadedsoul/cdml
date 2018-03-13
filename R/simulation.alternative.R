@@ -209,23 +209,22 @@ simulation.alternative <-
       if(keep.same == TRUE){
 
         dat.list.list <- mapply(
-          data = rep(data.list.list, each = length(simu.setups$method)),
-          method = rep(simu.setups$method, times = length(data.list.list)),
-          kfold = rep(simu.setups$fold, times = length(data.list.list)),
-          g.method = rep(simu.setups$g.method, times = length(data.list.list)),
-          gps.method = rep(simu.setups$gps.method, times = length(data.list.list)),
+          data = data.list.list,
           FUN = simulation.wrap,
           MoreArgs = list(
             trimLowerBound.t = trimming[1],
             trimUpperBound.t = trimming[2],
             model = model,
             ncores = ncores,
-            detoured = TRUE
+            detoured = TRUE,
+            method = "CDML",
+            kfold = fold,
+            g.method = "rf",
+            gps.method = gps.method
           ),
           SIMPLIFY = FALSE
         )
       }
-
 
       res.list.list <- mapply(
         data = rep(dat.list.list, each = length(simu.setups$method)),
