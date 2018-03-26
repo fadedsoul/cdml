@@ -31,9 +31,9 @@ simulation.alternative <-
            g.method = c("rf", "nnet"),
            gps.method = c("linear&normal"),
            fold = c(1),
-           sample.size.option = c(200, 300,500, 800, 1000, 1500,2000),
-           num.cov.option = c(1,2, 3, 5, 8,10,15, 20),
-           treatment.sd.option = c(0.5, 1, 2, 3, 5, 8, 10),
+           sample.size.option = c(200, 300, 500, 800, 1000, 1500, 2000),
+           num.cov.option = c(1, 2, 3, 5, 8, 10, 15),
+           treatment.sd.option = c(1, 2, 3, 5, 8, 10),
            struct.model.option =
              c("linear", "polynom", "polynom2", "polynom3"),
            detoured = FALSE,
@@ -111,7 +111,7 @@ simulation.alternative <-
     simu.setups.inbetween <-
       simu.setups.inbetween[which(((simu.setups.inbetween$fold != 1) &
                                      (simu.setups.inbetween$method != "CDML")
-      ) == FALSE), ]
+      ) == FALSE),]
     row.names(simu.setups.inbetween) <-
       1:nrow(simu.setups.inbetween)
 
@@ -162,7 +162,6 @@ simulation.alternative <-
 
     ############ Normally Speaking ##################
     if (detoured == FALSE) {
-
       ################# result.list ###################
 
       res.list.list <- mapply(
@@ -181,13 +180,13 @@ simulation.alternative <-
         SIMPLIFY = FALSE
       )
 
-      ################# save~1 ####################
-      ### just to be safe
-      save(data.list.list,
-           simu.setups,
-           true.data.list,
-           res.list.list,
-           file = file)
+      # ################# save~1 ####################
+      # ### just to be safe
+      # save(data.list.list,
+      #      simu.setups,
+      #      true.data.list,
+      #      res.list.list,
+      #      file = file)
 
       ######################## error #############################
 
@@ -204,10 +203,8 @@ simulation.alternative <-
     }
 
     ################# if we are about to use the detoured trick ################
-    if(detoured == TRUE){
-
-      if(keep.same == TRUE){
-
+    if (detoured == TRUE) {
+      if (keep.same == TRUE) {
         dat.list.list <- mapply(
           data = data.list.list,
           FUN = simulation.wrap,
@@ -242,47 +239,68 @@ simulation.alternative <-
         SIMPLIFY = FALSE
       )
 
-   saveRDS(list(data.list.list = dat.list.list,
-                res.list.list = res.list.list), file = file)
+      saveRDS(
+        list(
+          data.list.list = dat.list.list,
+          simu.setups = simu.setups,
+          true.data.list = true.data.list,
+          sample.size.generator = sample.size.generator,
+          num.cov.generator = num.cov.generator,
+          struct.model.generator = struct.model.generator,
+          treatment.sd.generator = treatment.sd.generator,
+          res.list.list = res.list.list
+        ),
+        file = file
+      )
 
-   error.list.list <- mapply(
-     result.list = res.list.list,
-     true.data = true.data.list,
-     FUN = err.w,
-     MoreArgs = list(ncores = ncores),
-     SIMPLIFY = FALSE
-   )
+      error.list.list <- mapply(
+        result.list = res.list.list,
+        true.data = true.data.list,
+        FUN = err.w,
+        MoreArgs = list(ncores = ncores),
+        SIMPLIFY = FALSE
+      )
 
-   bias.list <-
-     bias.evaluation.wrap(res.list.list = res.list.list, true.data = true.data.list)
+      bias.list <-
+        bias.evaluation.wrap(res.list.list = res.list.list, true.data = true.data.list)
 
-   saveRDS(
-     list(
-       data.list.list = data.list.list,
-       simu.setups = simu.setups,
-       true.data.list = true.data.list,
-       res.list.list = res.list.list,
-       error.list.list = error.list.list,
-       bias.list = bias.list
-     ),
-     file = file
-   ) ## << convention use file "<something>.rds"
+      try(saveRDS(
+        list(
+          data.list.list = data.list.list,
+          simu.setups = simu.setups,
+          true.data.list = true.data.list,
+          res.list.list = res.list.list,
+          error.list.list = error.list.list,
+          bias.list = bias.list,
+          sample.size.generator = sample.size.generator,
+          num.cov.generator = num.cov.generator,
+          struct.model.generator = struct.model.generator,
+          treatment.sd.generator = treatment.sd.generator
+        ),
+        file = file
+      ))
+      ## << convention use file "<something>.rds"
 
     }
     ##################### save~2 ##############################
 
-    if(detoured == FALSE){
-    ## Alternative  to  save()  and  load()
-    saveRDS(
-      list(
-        data.list.list = data.list.list,
-        simu.setups = simu.setups,
-        true.data.list = true.data.list,
-        res.list.list = res.list.list,
-        error.list.list = error.list.list,
-        bias.list = bias.list
-      ),
-      file = file
-    ) ## << convention use file "<something>.rds"
+    if (detoured == FALSE) {
+      ## Alternative  to  save()  and  load()
+      try(saveRDS(
+        list(
+          data.list.list = data.list.list,
+          simu.setups = simu.setups,
+          true.data.list = true.data.list,
+          res.list.list = res.list.list,
+          error.list.list = error.list.list,
+          bias.list = bias.list,
+          sample.size.generator = sample.size.generator,
+          num.cov.generator = num.cov.generator,
+          struct.model.generator = struct.model.generator,
+          treatment.sd.generator = treatment.sd.generator
+        ),
+        file = file
+      ))
+      ## << convention use file "<something>.rds"
     }
   }

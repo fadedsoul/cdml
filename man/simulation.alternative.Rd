@@ -8,10 +8,9 @@ simulation.alternative(model = "CTE", rep = 7, file = "simu.alter.rds",
   method = c("CDML"), simu.times = 2, g.method = c("rf", "nnet"),
   gps.method = c("linear&normal"), fold = c(1),
   sample.size.option = c(200, 300, 500, 800, 1000, 1500, 2000),
-  num.cov.option = c(1, 2, 3, 5, 8, 10, 15, 20),
-  treatment.sd.option = c(0.5, 1, 2, 3, 5, 8, 10),
-  struct.model.option = c("linear", "polynom", "polynom2", "polynom3"),
-  detoured = FALSE, keep.same = TRUE)
+  num.cov.option = c(1, 2, 3, 5, 8, 10, 15), treatment.sd.option = c(1, 2,
+  3, 5, 8, 10), struct.model.option = c("linear", "polynom", "polynom2",
+  "polynom3"), detoured = FALSE, keep.same = TRUE)
 }
 \arguments{
 \item{model}{model varies from "IV", "CTE"}
