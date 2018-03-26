@@ -241,7 +241,8 @@ simulation.alternative <-
 
       saveRDS(
         list(
-          data.list.list = dat.list.list,
+          dat.list.list = dat.list.list,
+          data.list.list = data.list.list,
           simu.setups = simu.setups,
           true.data.list = true.data.list,
           sample.size.generator = sample.size.generator,
@@ -267,6 +268,7 @@ simulation.alternative <-
       try(saveRDS(
         list(
           data.list.list = data.list.list,
+          dat.list.list = dat.list.list,
           simu.setups = simu.setups,
           true.data.list = true.data.list,
           res.list.list = res.list.list,
