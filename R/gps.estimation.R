@@ -487,8 +487,9 @@ gps.method.estimation <- function(data,
   #### quantile regression Random Forest method ####
   ### www.jmlr.org/papers/v7/meinshausen06a.html ####
   if (gps.method == "quantregForest") {
-    Xtrain     <- data[, !(names(data) %in% c("t", "y"))]
+    Xtrain     <- as.matrix(data[, !(names(data) %in% c("t", "y"))])
     Ytrain     <- data[, names(data) %in% c("t")]
+
 
     if(detoured == FALSE){
     object <- quantregForest(x = Xtrain, y = Ytrain)

@@ -104,6 +104,17 @@ g.predict <-
       data.chunk.treatment <-
         data.chunk[, (names(data.chunk) %in% c("t")), drop = FALSE]
 
+      ## debug mode
+
+     # print(data.eval.covariates)
+     # print(data.eval.treatment)
+
+
+      print(data.eval[, !(names(data.eval) %in% c("y")), drop = FALSE])
+      ##
+
+
+
       ## return matrix saving g(T|x) for various x, used in \int_\CX g(T|x)dP_x
       result.mat <-
         matrix(nrow = dim(data.eval)[1],
@@ -170,11 +181,16 @@ g.predict <-
             predict(object, mat, s = 0.01)
 
         } else{
+          # result.vec[ii] <-
+          #   predict(object, cbind(
+          #     data.frame(t = data.eval.treatment[ii,]),
+          #     data.eval.covariates[ii,]
+          #   ))
+
           result.vec[ii] <-
-            predict(object, cbind(
-              data.frame(t = data.eval.treatment[ii,]),
-              data.eval.covariates[ii,]
-            ))
+            predict(object,  data.eval[ii, !(names(data.eval) %in% c("y")), drop = FALSE])
+
+
         }
         if (verbose == TRUE) {
           cat("\n")

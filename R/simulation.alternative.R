@@ -254,16 +254,19 @@ simulation.alternative <-
         file = file
       )
 
-      error.list.list <- mapply(
+      try(error.list.list <- mapply(
         result.list = res.list.list,
         true.data = true.data.list,
         FUN = err.w,
         MoreArgs = list(ncores = ncores),
         SIMPLIFY = FALSE
       )
+      )
 
+      try(
       bias.list <-
         bias.evaluation.wrap(res.list.list = res.list.list, true.data = true.data.list)
+)
 
       try(saveRDS(
         list(
