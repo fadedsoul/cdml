@@ -9,7 +9,7 @@ data.generation(model = "CTE", numOfSamples = 1000,
   distributionForCovariates = "normal", distributionForIVs = "normal",
   distributionForNoise = "normal", distributionForTreatment = "normal",
   parametricCurveOption = "linear", trimLowerBound = -10,
-  trimUpperBound = 10, sd)
+  trimUpperBound = 10, sd, noise.sd = 1)
 }
 \arguments{
 \item{model}{choose from "CTE", "IV"}
@@ -35,6 +35,8 @@ data.generation(model = "CTE", numOfSamples = 1000,
 \item{trimUpperBound}{the upper bound of treatment trimming t.}
 
 \item{sd}{\eqn{t = \sum x_i + \epsilon}, the standard error of \eqn{\epsilon}}
+
+\item{noise.sd}{the standard error of response generation assuming the response model is based on a normal distribution}
 }
 \value{
 frame of generated data.

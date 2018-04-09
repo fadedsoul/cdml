@@ -207,14 +207,9 @@ simulation <- function(kfold,
         ## estimation of g and gbar
 
         ## the instrument does not influence the g estiamtion
-
-        ## debug ##
-        print("critical")
-
         object <-
           g.method.estimation(data = data[, !(names(data) %in% "z")], g.method = g.method)
-      ## debug
-print("end critical")
+
         ## debug ##
         ##
 

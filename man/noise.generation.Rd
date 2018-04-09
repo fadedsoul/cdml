@@ -5,12 +5,15 @@
 \alias{noise.generation}
 \title{Generation of noise dataset}
 \usage{
-noise.generation(distributionOption = "normal", numOfSamples = 1000)
+noise.generation(distributionOption = "normal", numOfSamples = 1000,
+  noise.sd = 1)
 }
 \arguments{
 \item{distributionOption}{choose from normal, uniform, student distributions}
 
 \item{numOfSamples}{number of samples}
+
+\item{noise.sd}{if our noise is normal distributed, then we use this parameter to tune the noise. Default value equals 1}
 }
 \value{
 A vector stands for noise

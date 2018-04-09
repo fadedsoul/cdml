@@ -12,6 +12,7 @@
 #' @param sample.size.option a vector of number of samples that will be selected from
 #' @param num.cov.option a vector of number of covariates that will be selected from
 #' @param treatment.sd.option a vector of standard deviation of treatment generation that will be selected from
+#' @param response.sd.option a vector of standard deviation of response generation that will be selected from, assuming normal distributed
 #' @param struct.model.option a vector of parametric curves of response generation, typically choose from "linear", "polynom", "polynom2", "polynom3", "mixture".
 #' @param detoured if FALSE method will be done normally;
 #'             otherwise a special simulation will be examined, where CDML is chosen method, CTE is chosen model,
@@ -34,6 +35,7 @@ simulation.alternative <-
            sample.size.option = c(200, 300, 500, 800, 1000, 1500, 2000),
            num.cov.option = c(1, 2, 3, 5, 8, 10, 15),
            treatment.sd.option = c(1, 2, 3, 5, 8, 10),
+           response.sd.option = c(1,2,3,5,8,10),
            struct.model.option =
              c("linear", "polynom", "polynom2", "polynom3"),
            detoured = FALSE,
@@ -63,6 +65,8 @@ simulation.alternative <-
       sample(num.cov.option, simu.times, replace = TRUE)
     treatment.sd.generator <-
       sample(treatment.sd.option, simu.times, replace = TRUE)
+    response.sd.generator <-
+      sample(response.sd.option, simu.times, replace = TRUE)
     struct.model.generator <-
       sample(struct.model.option, simu.times, replace = TRUE)
 
@@ -132,6 +136,7 @@ simulation.alternative <-
         covariates = num.cov.generator,
         parametricCurveOption = struct.model.generator,
         sd = treatment.sd.generator,
+        noise.sd = response.sd.generator,
         FUN = data.generation.wrap,
         MoreArgs = list(
           trimLowerBound = trimming[1],
@@ -249,6 +254,7 @@ simulation.alternative <-
           num.cov.generator = num.cov.generator,
           struct.model.generator = struct.model.generator,
           treatment.sd.generator = treatment.sd.generator,
+          response.sd.generator = response.sd.generator,
           res.list.list = res.list.list
         ),
         file = file
@@ -280,7 +286,8 @@ simulation.alternative <-
           sample.size.generator = sample.size.generator,
           num.cov.generator = num.cov.generator,
           struct.model.generator = struct.model.generator,
-          treatment.sd.generator = treatment.sd.generator
+          treatment.sd.generator = treatment.sd.generator,
+          response.sd.generator = response.sd.generator
         ),
         file = file
       ))
@@ -302,7 +309,8 @@ simulation.alternative <-
           sample.size.generator = sample.size.generator,
           num.cov.generator = num.cov.generator,
           struct.model.generator = struct.model.generator,
-          treatment.sd.generator = treatment.sd.generator
+          treatment.sd.generator = treatment.sd.generator,
+          response.sd.generator = response.sd.generator
         ),
         file = file
       ))

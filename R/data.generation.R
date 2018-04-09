@@ -19,6 +19,7 @@
 #' @param parametricCurveOption choose from "linear", "polynom", "polynom2", "polynom3", "mixture".
 #' @param ncores number of cores we use
 #' @param sd  \eqn{t = \sum x_i + \epsilon}, the standard error of \eqn{\epsilon}, choose from 1, 2, 3, 5, 8, 10, 15
+#' @param noise.sd the standard error of response generation assuming the response model is based on a normal distribution
 #'
 #' @return list that contains two parts:
 #'                 $data contains generated data,
@@ -35,13 +36,15 @@ data.generation.wrap <-
            trimUpperBound = 4,
            parametricCurveOption = "polynom",
            ncores = ncores,
-           sd = 8)
+           sd = 8,
+           noise.sd = 1)
   {
      data.list <- parallel::mcmapply(
       numOfSamples <- rep(samples, times = simu),
       FUN = data.generation,
 
       MoreArgs = list(
+        noise.sd = noise.sd,
         sd=sd,
         numOfCovariates = covariates,
         model = model,
@@ -81,6 +84,7 @@ dg.w <- data.generation.wrap
 #' @param trimLowerBound the lower bound of treatment trimming t.
 #' @param trimUpperBound the upper bound of treatment trimming t.
 #' @param sd  \eqn{t = \sum x_i + \epsilon}, the standard error of \eqn{\epsilon}
+#' @param noise.sd the standard error of response generation assuming the response model is based on a normal distribution
 #'
 #' @return frame of generated data.
 #' @export
@@ -105,7 +109,8 @@ data.generation <- function(model = "CTE",
                             parametricCurveOption = "linear",
                             trimLowerBound = -10,
                             trimUpperBound = 10,
-                            sd )
+                            sd,
+                            noise.sd = 1)
 {
   if ((!is.null(numOfPreSamples)) && (!is.null(numOfSamples))) {
     stop("Please enter either numOfSamples or numOfPreSamples in function data.generation!")
@@ -126,7 +131,7 @@ data.generation <- function(model = "CTE",
         distributionOption = distributionForCovariates
       )
     u <-
-      noise.generation(numOfSamples = numOfPreSamples, distributionOption = distributionForNoise)
+      noise.generation(numOfSamples = numOfPreSamples, distributionOption = distributionForNoise, noise.sd = noise.sd)
     t <-
       treatment.generation(
         covariates = x,

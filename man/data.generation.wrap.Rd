@@ -6,7 +6,8 @@
 \usage{
 data.generation.wrap(simu = 100, samples = 1000, covariates = 2, model,
   trimLowerBound = -4, trimUpperBound = 4,
-  parametricCurveOption = "polynom", ncores = ncores, sd = 8)
+  parametricCurveOption = "polynom", ncores = ncores, sd = 8,
+  noise.sd = 1)
 }
 \arguments{
 \item{simu}{number of times one would run, default = 100.}
@@ -26,6 +27,8 @@ data.generation.wrap(simu = 100, samples = 1000, covariates = 2, model,
 \item{ncores}{number of cores we use}
 
 \item{sd}{\eqn{t = \sum x_i + \epsilon}, the standard error of \eqn{\epsilon}, choose from 1, 2, 3, 5, 8, 10, 15}
+
+\item{noise.sd}{the standard error of response generation assuming the response model is based on a normal distribution}
 }
 \value{
 list that contains two parts:

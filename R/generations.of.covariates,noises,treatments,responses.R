@@ -131,12 +131,14 @@ treatment.generation <-
 #'
 #' @param distributionOption choose from normal, uniform, student distributions
 #' @param numOfSamples number of samples
+#' @param noise.sd if our noise is normal distributed, then we use this parameter to tune the noise. Default value equals 1
 #'
 #' @return A vector stands for noise
 #'
 noise.generation <-
   function(distributionOption = "normal",
-           numOfSamples = 1000)
+           numOfSamples = 1000,
+           noise.sd = 1)
   {
     check.distribution.name <- function(name) {
       return(name == "normal" |
@@ -150,7 +152,7 @@ noise.generation <-
     nmat <- vector('numeric', numOfSamples)
 
     if (distributionOption == "normal") {
-      nmat <- rnorm(numOfSamples, mean = 0, sd = 1)
+      nmat <- rnorm(numOfSamples, mean = 0, sd = noise.sd)
     }
 
     if (distributionOption == "uniform") {
